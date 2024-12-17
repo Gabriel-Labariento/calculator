@@ -28,6 +28,10 @@ body {
     border: 5px solid #0A0908;
     background-color: #C6AC8F;
     border-radius: 10px;
+    display: flex;
+    align-items:flex-end;
+    justify-content: end;
+    font-size: 100px;
 }
 
 .calculator-body{
