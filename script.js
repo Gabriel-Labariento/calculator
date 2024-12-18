@@ -1,69 +1,145 @@
 let numbers = Array.from(document.querySelectorAll(".number"));
 let operations = Array.from(document.querySelectorAll(".operation"));
-
 let screen = document.querySelector(".screen")
-
+let clearBtn = document.querySelector(".clear")
 let inputtedNum1 = false;
 let inputtedNum2 = false
 let inputtedOperation = false;
 let hasDecimalClicked = false;
+let isInputtingNum2 = false;
+let num1;
+let num2;
+let operation;
 
 function clear(){
     inputtedNum1 = false;
     inputtedNum2 = false
     inputtedOperation = false;
     hasDecimalClicked = false;
+    isInputtingNum2 = false;
     screen.textContent = "";
+    num1 = null;
+    num2 = null;
+    operation = null;
 }
 
-function displayNumber(e){
-    if (e.target.textContent === "."){
-        if (screen.textContent.includes(".")) return
-    }
-    screen.textContent += e.target.textContent;
-}
-
-function rememberOperation(e){
-    if (!inputtedOperation){
-        let operation = e.target;
-        operation.style.backgroundColor = "#0A0908"
-        inputtedOperation = true;
-    } 
-    
-}
-
-function operate(num1, num2, operation){
-    switch (operation) {
-        case "+":
-            num1 + num2
-            break;
-        case "-":
-            num1 - num2
-            break;
-        case "*":
-            num1 * num2
-            break;
-        case "/":
-            num1 / num2
-            break;
-        case "+":
-            num1 + num2
-            break;
-    
-        default:
-            break;
-    }
-}
+clearBtn.addEventListener("click", clear);
 
 numbers.map((number) =>{
-    number.addEventListener ("click", displayNumber)
+    number.addEventListener ("click", displayNumberOne)
 })
 
 operations.map((operation) =>{
-    operation.addEventListener ("click", 
-        (operation.textContent === "AC") ? clear : rememberOperation);
+    operation.addEventListener ("click", operate);
 })
 
+function displayNumberOne(e){
+    if (inputtedOperation) {
+        displayNumberTwo(e);
+        return;
+    }
+    if (e.target.textContent === "."){
+        if (!inputtedDecimal()){
+            if (screen.textContent === "") {
+                 screen.textContent += "0."
+            } else {
+                 screen.textContent += "."
+            }
+        }
+        return;
+    }
+    screen.textContent += e.target.textContent
+}
+
+function displayNumberTwo(e){
+    if (!isInputtingNum2){
+        screen.textContent = "";
+    }
+    if (e.target.textContent === "."){
+        if (!inputtedDecimal()){
+            if (screen.textContent === "") {
+                 screen.textContent += "0."
+            } else {
+                 screen.textContent += "."
+            }
+        }
+        return;
+    }
+    isInputtingNum2 = true;
+    screen.textContent += e.target.textContent
+}
+
+
+function setFirstNum(){
+    if (screen.textContent === "") {
+        return;
+    } else {
+        num1 = parseFloat(screen.textContent);
+        inputtedNum1 = true;
+        console.log(num1);
+    }
+}
+
+function setOperation(e){
+    if (!inputtedNum1) return;
+    else {
+        operation = e.target;
+        inputtedOperation = true;
+        operation.style.backgroundColor = "lightGray"
+        console.log(operation);
+    }
+    
+}
+
+function setSecondNum(){
+    if (screen.textContent === "") {
+        return;
+    } else {
+        num2 = parseFloat(screen.textContent);
+        inputtedNum2 = true;
+        console.log(num2);
+    }
+}
+
+function operate(e){
+    if (!inputtedOperation) {
+        setFirstNum();
+        setOperation(e);
+    }
+    else {
+        setSecondNum();
+        switch (operation.textContent) {
+            case "/":
+                displayResult(num1 / num2);
+                break;
+            case "*":
+                displayResult(num1 * num2);
+                break;
+            case "-":
+                displayResult(num1 - num2);
+                break;
+            case "+":
+                displayResult(num1 + num2);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+function displayResult(num){
+    screen.textContent = num
+}
 
 
 
+function inputtedDecimal(){
+    return (screen.textContent.includes(".")) ? true : false 
+}
+
+// User enters first number
+// When a user first clicks an operation, the first number is stored as well as the operation
+// When the user next clicks an operation, the following happens
+    // 1. the second number is stored and the operation is applied to the first two numbers
+    // 2. The result becomes the new first number
+    // 3. The operation and the second number is cleared
