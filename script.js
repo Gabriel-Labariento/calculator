@@ -99,7 +99,6 @@ function setOperation(e){
             operate(num1, num2, currentOperation);
         }
         currentOperation = e.target.textContent
-        console.log(currentOperation);
         inputtedOperation = true;
         setFirstNum();
     }
@@ -120,11 +119,7 @@ function setSecondNum(){
 }
 
 function operate(first, second, operation) {
-    if ((num1 !== null && num2 !== null && currentOperation !== null)){
-        console.log(`Num1: ${num1}`);
-        console.log(`Num2: ${num2}`);
-        console.log(`op: ${currentOperation}`);
-        
+    if ((num1 !== null && num2 !== null && currentOperation !== null)){        
         switch (operation) {
             case "/":
                 screen.textContent = (num2 === 0) ? "Undef" : `${first / second}`.toString();
@@ -144,7 +139,6 @@ function operate(first, second, operation) {
     num1 = parseFloat(screen.textContent);
     if (screen.textContent.length > 7){
         let s = screen.textContent;
-        console.log(s)
         screen.textContent = s.substring(0,8)
     }
     num2 = null;
@@ -152,9 +146,6 @@ function operate(first, second, operation) {
     inputtedOperation = false;
     inputtedNum2 = false;
     } else {
-        console.log(num1);
-        console.log(num2);
-        console.log(currentOperation)
         console.log("error")
     }
 
