@@ -29,6 +29,8 @@ let operations = Array.from(document.querySelectorAll(".operation"));
 let screen = document.querySelector(".screen")
 let clearBtn = document.querySelector(".clear")
 let equalSign = document.querySelector(".equalSign")
+let changeSign = document.querySelector(".changeSign")
+let toPercent = document.querySelector(".percent")
 let inputtedOperation = false;
 let inputtedNum1 = false;
 let inputtedNum2 = false;
@@ -47,12 +49,20 @@ operations.map((operation) => {
 
 equalSign.addEventListener("click", () => {
     if (inputtedNum1 && inputtedOperation){
-        num2 = parseFloat(screen.textContent);
+        num2 = getNumber();
     }
     operate(num1, num2, currentOperation)
 })
 
 clearBtn.addEventListener("click", () => location.reload())
+
+changeSign.addEventListener("click", () => {
+    screen.textContent = parseFloat(screen.textContent) * -1;
+})
+
+toPercent.addEventListener("click", () => {
+    screen.textContent = parseFloat(screen.textContent) / 100;
+})
 
 function displayNumber(e){
     if (e.target.textContent === "."){
@@ -78,7 +88,7 @@ function getNumber(){
 function setOperation(e){
     if (screen.textContent !== ""){
         // Disable operations until a number is clicked again 
-        if (inputtedNum1 && !inputtedNum2) {
+        if (inputtedNum1 && !inputtedNum2 ) {
             return;
         }
         if (num1 !== null && currentOperation !== null ){
@@ -107,24 +117,40 @@ function setSecondNum(){
 }
 
 function operate(first, second, operation) {
-    if (!(num1 === null && num2 === null && currentOperation === null)){
+    if ((num1 !== null && num2 !== null && currentOperation !== null)){
+        console.log(`Num1: ${num1}`);
+        console.log(`Num2: ${num2}`);
+        console.log(`op: ${currentOperation}`);
+        
         switch (operation) {
             case "/":
-                screen.textContent = `${first / second}`;
+                screen.textContent = (num2 === 0) ? "Undef" : `${first / second}`.toString();
                 break;
             case "*":
-                screen.textContent = `${first * second}`
+                screen.textContent = `${first * second}`.toString()
                 break;
             case "-":
-                screen.textContent = `${first - second}`
+                screen.textContent = `${first - second}`.toString()
                 break;
             case "+":
-                screen.textContent = `${first + second}`
+                screen.textContent = `${first + second}`.toString()
                 break;
             default:
                 break;
         }
+    num1 = parseFloat(screen.textContent);
+    if (screen.textContent.length > 7){
+        let s = screen.textContent;
+        console.log(s)
+        screen.textContent = s.substring(0,7)
+    }
+    num2 = null;
+    currentOperation = null;
+    inputtedNum2 = false;
     } else {
+        console.log(num1);
+        console.log(num2);
+        console.log(currentOperation)
         console.log("error")
     }
 
