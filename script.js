@@ -1,75 +1,161 @@
+/**
+ * What are the things that a calculator needs to be able to do?
+ * - When a user clicks on a number, display that number on the screen
+ * - When a user clicks on an operation, take the number on the screen and 
+    assign it as the first number
+    - Make sure that the user cannot use the operations unless there is a
+    number on the screen
+    - Make sure the user cannot use the operations after assigning the first number
+    unless they have entered the second number
+    - When a user clicks on a decimal button:
+        - If it is the only character on the screen, the number is equal to 0
+        - If there is already a decimal on the screen, the user cannot click on it again
+    - Clear, change sign, and percent are all unary operations.
+    - Divide, multiply, add, and subtract are binary operations
+    - Equals is different from the 4 above because you do not need to enter a new number
+
+    What is the process of an operation
+    1. Input a first number
+    2. Select an operation only if there is already a first number
+    3. Store the first number and the operation in a variable
+    4. Input a second number (Optional)
+    5. When another operation is clicked, the num on the screen becomes the 2nd number.
+    6. Store the recently clicked operation in a temporary variable (nextOperation)
+    6. Apply the operation stored in memory to the first and second number. 
+ */
+
 let numbers = Array.from(document.querySelectorAll(".number"));
 let operations = Array.from(document.querySelectorAll(".operation"));
-let buttons = Array.from(document.querySelectorAll(".col"));
 let screen = document.querySelector(".screen")
-
-let inputtedNum1 = false;
-let inputtedNum2 = false
+let clearBtn = document.querySelector(".clear")
+let equalSign = document.querySelector(".equalSign")
+let changeSign = document.querySelector(".changeSign")
+let toPercent = document.querySelector(".percent")
 let inputtedOperation = false;
-let hasDecimalClicked = false;
-let num1;
-let num2;
-let operation;
+let inputtedNum1 = false;
+let inputtedNum2 = false;
 
-function clear(){
-    inputtedNum1 = false;
-    inputtedNum2 = false
-    inputtedOperation = false;
-    hasDecimalClicked = false;
-    screen.textContent = "";
-}
+let currentOperation = null;
+let num1 = null;
+let num2 = null;
+
+numbers.map((number) => {
+    number.addEventListener("click", displayNumber)
+})
+
+operations.map((operation) => {
+    operation.addEventListener("click", setOperation);
+})
+
+equalSign.addEventListener("click", () => {
+    if (inputtedNum1 && inputtedOperation){
+        num2 = getNumber();
+    }
+    operate(num1, num2, currentOperation)
+})
+
+clearBtn.addEventListener("click", () => location.reload())
+
+changeSign.addEventListener("click", () => {
+    screen.textContent = (parseFloat(screen.textContent) * -1).toString().substring(0,8);
+})
+
+toPercent.addEventListener("click", () => {
+    screen.textContent = parseFloat(screen.textContent) / 100;
+})
 
 function displayNumber(e){
-    // Check for decimal point
-    if (e.target.textContent === "."){
-        if (screen.textContent.includes(".")) return
+    if (screen.textContent.length >= 8){
+        return; 
     }
-    // Check if num1 or num2
-    if (inputtedOperation) screen.textContent = "";
+    if (e.target.textContent === "."){
+        if (handleDecimalInput()) return;
+    }
+    if (inputtedNum1 && !inputtedNum2){
+        screen.textContent = "";
+        inputtedNum2 = true;
+    }
     screen.textContent += e.target.textContent;
 }
 
-function rememberOperation(e){
-    if (!inputtedOperation){
-        num1 = parseFloat(screen.textContent);
-        let operation = e.target;
-        operation.style.backgroundColor = "#0A0908"
+function handleDecimalInput(){
+    if (screen.textContent.includes(".")){
+        return true;
+    }
+}
+
+function getNumber(){
+    return parseFloat(screen.textContent);
+}
+
+function setOperation(e){
+    if (screen.textContent !== ""){
+        // Disable operations until a number is clicked again 
+        if (inputtedNum1 && !inputtedNum2 && inputtedOperation) {
+            return;
+        }
+        if (num1 !== null && currentOperation !== null ){
+            num2 = getNumber();
+            operate(num1, num2, currentOperation);
+        }
+        currentOperation = e.target.textContent
+        console.log(currentOperation);
         inputtedOperation = true;
-        inputtedOperation = e.target.textContent;
+        setFirstNum();
+    }
+}
+
+function checkNum1(){
+    return (num1 === undefined) ? false : true;
+} 
+
+function setFirstNum(){
+    inputtedNum1 = true;
+    return num1 = getNumber();
+}
+
+function setSecondNum(){
+    inputtedNum2 = true;
+    return num2 = getNumber();
+}
+
+function operate(first, second, operation) {
+    if ((num1 !== null && num2 !== null && currentOperation !== null)){
+        console.log(`Num1: ${num1}`);
+        console.log(`Num2: ${num2}`);
+        console.log(`op: ${currentOperation}`);
+        
+        switch (operation) {
+            case "/":
+                screen.textContent = (num2 === 0) ? "Undef" : `${first / second}`.toString();
+                break;
+            case "*":
+                screen.textContent = `${first * second}`.toString()
+                break;
+            case "-":
+                screen.textContent = `${first - second}`.toString()
+                break;
+            case "+":
+                screen.textContent = `${first + second}`.toString()
+                break;
+            default:
+                break;
+        }
+    num1 = parseFloat(screen.textContent);
+    if (screen.textContent.length > 7){
+        let s = screen.textContent;
+        console.log(s)
+        screen.textContent = s.substring(0,8)
+    }
+    num2 = null;
+    currentOperation = null;
+    inputtedOperation = false;
+    inputtedNum2 = false;
     } else {
-        num2 = parseFloat(screen.textContent);
+        console.log(num1);
         console.log(num2);
+        console.log(currentOperation)
+        console.log("error")
     }
+
 }
-
-function operate(num1, num2, operation){
-    switch (operation) {
-        case "+":
-            num1 + num2
-            break;
-        case "-":
-            num1 - num2
-            break;
-        case "*":
-            num1 * num2
-            break;
-        case "/":
-            num1 / num2
-            break;
-        case "+":
-            num1 + num2
-            break;
-    
-        default:
-            break;
-    }
-}
-
-numbers.map((number) =>{
-    number.addEventListener ("click", displayNumber)
-})
-
-operations.map((operation) =>{
-    operation.addEventListener ("click", 
-        (operation.textContent === "AC") ? clear : rememberOperation);
-})
