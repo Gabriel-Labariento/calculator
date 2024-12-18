@@ -57,7 +57,7 @@ equalSign.addEventListener("click", () => {
 clearBtn.addEventListener("click", () => location.reload())
 
 changeSign.addEventListener("click", () => {
-    screen.textContent = parseFloat(screen.textContent) * -1;
+    screen.textContent = (parseFloat(screen.textContent) * -1).toString().substring(0,8);
 })
 
 toPercent.addEventListener("click", () => {
@@ -65,6 +65,9 @@ toPercent.addEventListener("click", () => {
 })
 
 function displayNumber(e){
+    if (screen.textContent.length >= 8){
+        return; 
+    }
     if (e.target.textContent === "."){
         if (handleDecimalInput()) return;
     }
@@ -88,7 +91,7 @@ function getNumber(){
 function setOperation(e){
     if (screen.textContent !== ""){
         // Disable operations until a number is clicked again 
-        if (inputtedNum1 && !inputtedNum2 ) {
+        if (inputtedNum1 && !inputtedNum2 && inputtedOperation) {
             return;
         }
         if (num1 !== null && currentOperation !== null ){
@@ -142,10 +145,11 @@ function operate(first, second, operation) {
     if (screen.textContent.length > 7){
         let s = screen.textContent;
         console.log(s)
-        screen.textContent = s.substring(0,7)
+        screen.textContent = s.substring(0,8)
     }
     num2 = null;
     currentOperation = null;
+    inputtedOperation = false;
     inputtedNum2 = false;
     } else {
         console.log(num1);
